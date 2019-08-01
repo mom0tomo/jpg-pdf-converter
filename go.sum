@@ -1,0 +1,9 @@
+github.com/gographics/imagick v3.2.0+incompatible h1:KeoHcmV7bVRKnj6tXTIcEGnyDg8kO0vPNUTC/5HzwOI=
+github.com/gographics/imagick v3.2.0+incompatible/go.mod h1:gk55mrttmUSR+Vt6dxnxuD7EKU/3e5Ehe8HRGVCI8mw=
+github.com/unidoc/unidoc v2.2.0+incompatible h1:AVVdSa11YROyMPxcAsp3j4Wz7zHSrXGjcVmHwgEvD+Y=
+github.com/unidoc/unidoc v2.2.0+incompatible/go.mod h1:xz5DRu10sgNndY6/LrqtXytidQ/aXastVtkIVSxIj3Q=
+golang.org/x/image v0.0.0-20190729225735-1bd0cf576493 h1:hw8b4aUfc6J+8Ekj2V0VCmgBCGQ9azXN0lo/I/NSw1Q=
+golang.org/x/image v0.0.0-20190729225735-1bd0cf576493/go.mod h1:FeLwcggjj3mMvU+oOTbSwawSJRM1uh48EjtB4UJZlP0=
+golang.org/x/text v0.3.0/go.mod h1:NqM8EUOU14njkJ3fqMW+pc6Ldnwhi/IjpwHt7yyuwOQ=
+gopkg.in/gographics/imagick.v3 v3.2.0 h1:eUwlkCw2fa20OGu47G39Im8c50S9n/CVkh8PwtOKExA=
+gopkg.in/gographics/imagick.v3 v3.2.0/go.mod h1:HbW83cYCl1jftZi3B/VZpVqsuNi4vW7qUrghjxBiT+8=
