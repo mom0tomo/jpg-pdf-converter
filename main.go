@@ -1,8 +1,8 @@
 package main
 
 import (
+	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 
@@ -14,29 +14,43 @@ import (
 func init() {
 	// Debug log level.
 	unicommon.SetLogger(unicommon.NewConsoleLogger(unicommon.LogLevelDebug))
+
+	imagick.Initialize()
+	defer imagick.Terminate()
 }
 
 func main() {
-	imagick.Initialize()
-	defer imagick.Terminate()
-
-	mw := imagick.NewMagickWand()
-	defer mw.Destroy()
-
 	srcDir := "./images/"
 	dstDir := "./pdfs/"
+
+	if err := imagesToPdf(srcDir, dstDir); err != nil {
+		fmt.Printf("Error: %v\n", err)
+		os.Exit(1)
+	}
+
+	if err := mergePDFs(dstDir); err != nil {
+		fmt.Printf("Error: %v\n", err)
+		os.Exit(1)
+	}
+
+	fmt.Printf("Complete, see output file in: %s\n", dstDir)
+}
+
+func imagesToPdf(srcDir string, dstDir string) error {
+	mw := imagick.NewMagickWand()
+	defer mw.Destroy()
 
 	files, _ := ioutil.ReadDir(srcDir)
 	fileNum := len(files)
 
 	for _, file := range files {
-		// 拡張子を抜いたファイル名を取得する
-		fileName := file.Name()
-		baseName := filepath.Base(fileName[:len(fileName) - len(filepath.Ext(fileName))])
-
 		for i := 1; i < fileNum; i++ {
-			// jpgを読む
-			mw.ReadImage(srcDir + baseName + ".jpg")
+			// 拡張子を抜いたファイル名を取得する
+			fileName := file.Name()
+			baseName := filepath.Base(fileName[:len(fileName)-len(filepath.Ext(fileName))])
+
+			// jpg/pngを読む
+			mw.ReadImage(srcDir + fileName)
 
 			// pdfに変える
 			mw.SetImageFormat("pdf")
@@ -44,7 +58,10 @@ func main() {
 		}
 	}
 
-	// pdfを結合する
+	return nil
+}
+
+func mergePDFs(dstDir string) error {
 	pdfWriter := pdf.NewPdfWriter()
 
 	pdfFiles, _ := ioutil.ReadDir(dstDir)
@@ -52,40 +69,41 @@ func main() {
 	for _, pdfFile := range pdfFiles {
 		f, err := os.Open(dstDir + pdfFile.Name())
 		if err != nil {
-			log.Fatal(err)
+			return err
 		}
 		defer f.Close()
 
 		pdfReader, err := pdf.NewPdfReader(f)
 		if err != nil {
-			log.Fatal(err)
+			return err
 		}
 
 		numPages, err := pdfReader.GetNumPages()
 		for j := 0; j < numPages; j++ {
 			page, err := pdfReader.GetPage(j + 1)
 			if err != nil {
-				log.Fatal(err)
+				return err
 			}
 
 			err = pdfWriter.AddPage(page)
 			if err != nil {
-				log.Fatal(err)
+				return err
 			}
 		}
 		if err := pdfWriter.Write(f); err != nil {
-			log.Fatal(err)
+			return err
 		}
 	}
 
 	fWrite, err := os.Create(dstDir + "output.pdf")
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
-
 	defer fWrite.Close()
 
 	if err := pdfWriter.Write(fWrite); err != nil {
-		log.Fatal(err)
+		return err
 	}
+
+	return nil
 }
